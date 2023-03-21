@@ -58,7 +58,6 @@ def start():
       except (IndexError, KeyError, OSError) as e:
         print("An error was produced: ", e)
         # print_f("Error produced!")
-        wifi.wifi_reconnect()
   finally:
     wifi.wifi_disconnect()
 
