@@ -33,7 +33,7 @@ try:
 except OSError:
     print("sha error write")
 
-if(result != stored_result):
+if(result.text != stored_result):
     print("Pulling from repo")
     ugit.pull_all(isconnected=True)
 
