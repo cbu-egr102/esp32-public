@@ -1,11 +1,16 @@
 import machine
 import network
 
-wifi_name = ""
-wifi_pswd = ""
+def write_config(name, password):
+    d = dict()
+    d['wifi_name'] = name
+    d['wifi_pswd'] = password
+    return d
 
 def read_config():
-    with open("config.txt") as config_file:
+    wifi_name = ""
+    wifi_pswd = ""
+    with open("wifi.config") as config_file:
         for line in config_file.read().splitlines():
             args = line.split()
             if not args:
@@ -14,14 +19,16 @@ def read_config():
                 wifi_name = " ".join(args[1:])
             elif args[0] == "w_pwd":
                 wifi_pswd = " ".join(args[1:])
+    d = write_config(wifi_name, wifi_pswd)
+    return d
 
 def wifi_setup():
     # set up wifi
-    read_config()
+    d = read_config()
     machine.freq(160 * 10 ** 6)
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
-    wlan.connect(wifi_name, wifi_pswd)
+    wlan.connect(d['wifi_name'], d['wifi_pswd'])
 
     while not wlan.isconnected():
         machine.idle()
