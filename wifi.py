@@ -40,10 +40,11 @@ def wifi_disconnect():
         wlan.active(False)
 
 def wifi_reconnect():
+    d = read_config()
     wlan = network.WLAN(network.STA_IF)
     if not wlan.isconnected():
         print("The WiFi disconnected. Reconnecting...")
         wlan.active(True)
-        wlan.connect(wifi_name, wifi_pswd)
+        wlan.connect(d['wifi_name'], d['wifi_pswd'])
         while not wlan.isconnected():
             machine.idle()
