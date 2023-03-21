@@ -25,12 +25,12 @@ password = "3141592653"
 # CHANGE TO YOUR REPOSITORY INFO
 # Repository must be public if no personal access token is supplied
 user = 'cbu-egr102'
-repository = 'ugit_test'
+repository = 'esp32-public'
 token = ''
 
 # Don't remove ugit.py from the ignore_files unless you know what you are doing :D
 # Put the files you don't want deleted or updated here use '/filename.ext'
-ignore_files = ['/scripts/windows_flash_py.bat', '.gitignore', 'README.md']
+ignore_files = ['.gitignore', 'bot.config']
 ignore = ignore_files
 ### -----------END OF USER VARIABLES ----------####
 
