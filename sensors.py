@@ -56,22 +56,27 @@ class HCSR04:
         # 0.34320 mm/us that is 1mm each 2.91us
         # pulse_time // 2 // 2.91 -> pulse_time // 5.82 -> pulse_time * 100 // 582
         mm = pulse_time * 100 // 582
-        raw = (mm-70/2)/(166/2-70/2)
+        raw = mm
+#        raw = (mm-70/2)/(166/2-70/2)
+#            buckets = [-1337, 2, 6, 13, 18]
+#[-1.0, 0.1, 0.32, 0.54, 0.76]
  #       raw =  0.4
-        if raw < 0.05:
+        if raw < 25:
           binned_value = -2
-        elif raw < 0.17:
-          binned_value = 10
-        elif raw < 0.33:
-          binned_value = 20
-        elif raw < 0.5:
-          binned_value = 40 
-        elif raw < 0.66:
-          binned_value = 80
-        elif raw < 0.83:
-          binned_value = 160
+        elif raw < 35:
+          binned_value = 2
+        elif raw < 57:
+          binned_value = 6
+        elif raw < 80:
+          binned_value = 13 
         else:
-          binned_value = 220
+          binned_value = 18
+#        elif raw < 0.66:
+#          binned_value = 18
+#        elif raw < 0.83:
+#          binned_value = 160
+#        else:
+#          binned_value = 220
         
 #        binned_value = 
 
@@ -107,7 +112,8 @@ class AnalogReader:
 
   def read_sensor_values(self, order):
     scalor = 4.096 / (2**15-1)
-    buckets = [-2, 10, 20, 40, 80, 160, 220]
+#    buckets = [-2, 10, 20, 40, 80, 160, 220]
+    buckets = [-2, 2, 6, 13, 18]
     light = []
     voltage = []
     V = 0
@@ -117,7 +123,9 @@ class AnalogReader:
     def read_sensor(adc, channel, v_a, v_b, bkts=buckets):
       try:
         raw = (adc.read(4, channel) - v_a) / v_b
-        return max([-2] + [n for n, p in zip(bkts, [-1.0, 0.05, 0.2, 0.4, 0.6, 0.8, 1.0]) if raw >= p])
+#        return int(raw * 100)
+#        return adc.read(4,channel)
+        return max([-2] + [n for n, p in zip(bkts, [-2.0, 0.0, 0.165, 0.5, 0.825]) if raw >= p])
       except OSError:
         return -1.0
 
@@ -126,16 +134,16 @@ class AnalogReader:
       except OSError: return -1.0
 
     for i, c in enumerate(self.layout[:4]):
-      if c == "l": light.append(read_sensor(self.adc_1, i, 335, 30483))
-      elif c == "v": voltage.append(read_sensor(self.adc_1, i, 2669, 29567))
+      if c == "l": light.append(read_sensor(self.adc_1, i, 6550, 23750))
+      elif c == "v": voltage.append(read_sensor(self.adc_1, i, 5424, 26446))
       elif c == "V": V = read_other_sensor(self.adc_1, i) * scalor * 2
       elif c == "C": C = (read_other_sensor(self.adc_1, i) * scalor - 2.5) / 0.17
 #      elif c == "C": C = read_other_sensor(self.adc_1, i) * scalor
       else: other.append(read_other_sensor(self.adc_1, i))
 
     for i, c in enumerate(self.layout[4:]):
-      if c == "l": light.append(read_sensor(self.adc_2, i, 335, 30483))
-      elif c == "v": voltage.insert(0, read_sensor(self.adc_2, i, 2669, 29567))
+      if c == "l": light.append(read_sensor(self.adc_1, i, 6550, 23750))
+      elif c == "v": voltage.insert(0, read_sensor(self.adc_2, i, 5424, 26446))
       elif c == "V": V = read_other_sensor(self.adc_2, i) * scalor * 2
       elif c == "C": C = (read_other_sensor(self.adc_2, i) * scalor - 2.5) / 0.17
 #      elif c == "C": C = read_other_sensor(self.adc_2, i) * scalor
@@ -147,8 +155,8 @@ class AnalogReader:
       elif o == "v": data.append(voltage.pop(0) if voltage else 0.0)
       elif o == "e":
         temp_time = time.time_ns()
-        data.append(V * 2 * C * (temp_time - self.time) / 10 ** 9)
-#        data.append(2)
+        data.append(V * C * (temp_time - self.time) / 10 ** 9)
+#        data.append(C)
         self.time = temp_time
       else: data.append(other.pop(0) if other else 0.0)
 
