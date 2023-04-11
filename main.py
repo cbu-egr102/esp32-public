@@ -3,11 +3,6 @@ import wifi
 import urequests
 
 def start():
-  def print_f(msg):
-    with open("log.txt", "a") as file:
-      file.write(msg.strip() + "\n")
-
-  print_f("===========================\nline 138: Start")
   # process config
   bot_id = -1
   aws_endpoint = ""
@@ -48,7 +43,7 @@ def start():
       data = [bot_id] + [ds.distance_mm() for ds in distance_sensors[:2]] + ads.read_sensor_values("vvlle")
       data_str = str(data).replace(" ", "")
       try:
-        response = urequests.get(aws_endpoint+"?data="+data_str, timeout=5)
+        response = urequests.get(aws_endpoint+"?data="+data_str)
         print(aws_endpoint+"?data="+data_str)
         body = response.json()
         print("Response:", body)
