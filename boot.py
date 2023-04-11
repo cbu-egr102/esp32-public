@@ -33,6 +33,9 @@ try:
 except OSError:
     print("sha error write")
 
+if(stored_result == ""):
+    stored_result = result.text
+
 if(result.text != stored_result):
     print("Pulling from repo")
     ugit.pull_all(isconnected=True)
